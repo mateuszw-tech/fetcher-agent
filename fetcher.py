@@ -1,5 +1,5 @@
 import concurrent
-import time
+import json
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
@@ -29,21 +29,14 @@ class AdvertisementInfo:
         self.price = price
         self.url = url
 
-    def display_information(self):
-        print(
-            "Title: "
-            + self.title
-            + "\nUsername: "
-            + self.username
-            + "\nLocation: "
-            + self.location
-            + "\nPhone Number: "
-            + self.phone_number
-            + "\nPrice: "
-            + self.price
-            + "\nURL: "
-            + self.url
-        )
+    def convert_to_json(self):
+        info_dict = {"title": self.title,
+                     "username": self.username,
+                     "location": self.location,
+                     "phone_number": self.phone_number,
+                     "price": self.price,
+                     "url": self.url}
+        return json.dumps(info_dict)
 
 
 class Fetcher(ABC):
@@ -51,11 +44,19 @@ class Fetcher(ABC):
     def load_osint_data_async(self, offer_list) -> List[AdvertisementInfo]:
         raise NotImplementedError()
 
+    @abstractmethod
+    def settings(self, *args) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def start(self) -> None:
+        raise NotImplementedError()
+
 
 class SprzedajemyFetcher(Fetcher):
 
-    def __init__(self, *cities):
-        self.cities = cities
+    def __init__(self, *cities: str):
+        self.cities: tuple = cities
         self.current_data: list[AdvertisementInfo] = []
 
     def get_all_offers_urls(self) -> List[str]:
@@ -75,9 +76,6 @@ class SprzedajemyFetcher(Fetcher):
 
         return offers
 
-    def change_cities(self, *cities) -> None:
-        self.cities = cities
-
     async def append_data(self, info: AdvertisementInfo) -> None:
         self.current_data.append(info)
 
@@ -93,7 +91,7 @@ class SprzedajemyFetcher(Fetcher):
                     phone_number = SprzedajemyUtils.get_offer_phone_number(soup)
                     price = SprzedajemyUtils.get_offer_price(soup)
                     url = offer_url
-                    print("test " + offer_url)
+                    # print("test " + offer_url)
             await self.append_data(AdvertisementInfo(title, username, location, phone_number, price, url))
         except Exception as e:
             print({e})
@@ -107,5 +105,16 @@ class SprzedajemyFetcher(Fetcher):
 
         await asyncio.gather(*tasks)
 
-    def get_osint_data(self):
+    def get_osint_data(self) -> list[AdvertisementInfo]:
         return self.current_data
+
+    def data_clear(self):
+        self.current_data = []
+
+    def settings(self, *cities) -> None:
+        self.cities = cities
+        self.data_clear()
+
+    def start(self):
+        urls = self.get_all_offers_urls()
+        asyncio.run(self.load_osint_data_async(urls))
