@@ -26,14 +26,15 @@ class ScraperUtils:
 
         return input_text.translate(translator)
 
-    # todo: Add Threading
     @staticmethod
     def get_all_pages_urls_from_different_cities(pages_scraping_method, *args):
         pages = [result for arg in args for result in pages_scraping_method(arg)]
         return pages
 
     @staticmethod
-    async def fail_repeat_execution(function: callable, *args, max_retries: int = 10, sleep_time: float = 1):
+    async def fail_repeat_execution(
+        function: callable, *args, max_retries: int = 10, sleep_time: float = 1
+    ):
         retry_count = 0
         while retry_count < max_retries:
             try:
@@ -73,7 +74,7 @@ class SprzedajemyUtils:
         return pages
 
     @staticmethod
-    def find_all_offers_in_selected_page(page: str):
+    def find_all_offers_in_current_page(page: str):
         offers = []
         soup = ScraperUtils.return_website_string_as_bs4_content(page)
         offer_titles = soup.find_all("h2", class_="title")
@@ -86,7 +87,7 @@ class SprzedajemyUtils:
     def get_all_offers_urls(pages: list[str]):
         urls = []
         for page in tqdm(pages):
-            offers = SprzedajemyUtils.find_all_offers_in_selected_page(page)
+            offers = SprzedajemyUtils.find_all_offers_in_current_page(page)
             for offer in offers:
                 urls.append(offer)
         return urls
@@ -116,9 +117,9 @@ class SprzedajemyUtils:
     def get_offer_phone_number(soup: BeautifulSoup) -> str:
         try:
             phone_number = (
-                    soup.find("span", class_="phone-number-truncated").find("span").get_text()
-                    + " "
-                    + soup.find("span", class_="phone-number-truncated").get("data-phone-end")
+                soup.find("span", class_="phone-number-truncated").find("span").get_text()
+                + " "
+                + soup.find("span", class_="phone-number-truncated").get("data-phone-end")
             )
         except AttributeError:
             phone_number = "Unknown"
@@ -134,3 +135,12 @@ class SprzedajemyUtils:
             return "Unknown"
         except ConnectionError:
             return "Unknown"
+
+    @staticmethod
+    def get_offer_details(soup):
+        title = SprzedajemyUtils.get_offer_title(soup)
+        username = SprzedajemyUtils.get_offer_username(soup)
+        location = SprzedajemyUtils.get_offer_location(soup)
+        phone_number = SprzedajemyUtils.get_offer_phone_number(soup)
+        price = SprzedajemyUtils.get_offer_price(soup)
+        return title, username, location, phone_number, price

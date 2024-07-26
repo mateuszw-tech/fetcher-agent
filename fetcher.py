@@ -7,7 +7,7 @@ from typing import List
 from bs4 import BeautifulSoup
 import asyncio
 import aiohttp
-
+import socket
 from utils import SprzedajemyUtils, ScraperUtils
 
 
@@ -29,92 +29,116 @@ class AdvertisementInfo:
         self.price = price
         self.url = url
 
-    def convert_to_json(self):
-        info_dict = {"title": self.title,
-                     "username": self.username,
-                     "location": self.location,
-                     "phone_number": self.phone_number,
-                     "price": self.price,
-                     "url": self.url}
+    def convert_to_json(self) -> str:
+        info_dict = {
+            "title": self.title,
+            "username": self.username,
+            "location": self.location,
+            "phone_number": self.phone_number,
+            "price": self.price,
+            "url": self.url,
+        }
         return json.dumps(info_dict)
 
 
 class Fetcher(ABC):
     @abstractmethod
-    def load_osint_data_async(self, offer_list) -> List[AdvertisementInfo]:
+    def collect_osint_data(self, offer_list) -> List[AdvertisementInfo]:
         raise NotImplementedError()
 
     @abstractmethod
-    def settings(self, *args) -> None:
+    def start(self, host: str, port: int, client_socket: socket.socket) -> None:
         raise NotImplementedError()
 
     @abstractmethod
-    def start(self) -> None:
+    @property
+    def settings(self):
         raise NotImplementedError()
 
 
-class SprzedajemyFetcher(Fetcher):
+class SprzedajemyFetcher(Fetcher):  # NOQA
 
     def __init__(self, *cities: str):
         self.cities: tuple = cities
-        self.current_data: list[AdvertisementInfo] = []
+        self.collected_osint_data: list[AdvertisementInfo] = []
+    # Fetcher ma wkładać rzeczy do kolejki, agent niech z niej wyciąga, wszystko pojedynczo
+    # pool, kolejka ma być bezpieczna pomiędzy wątkami (thread safe)
+    # zbieram OLAP nie OLTP,
 
     def get_all_offers_urls(self) -> List[str]:
-        pages = ScraperUtils.get_all_pages_urls_from_different_cities(SprzedajemyUtils.get_all_pages_urls, *self.cities)
-        offer_urls_futures = []
-        results_list = []
+        pages = ScraperUtils.get_all_pages_urls_from_different_cities(
+            SprzedajemyUtils.get_all_pages_urls, *self.cities
+        )
+        advertisement_urls_futures = []
+        collected_lists_of_advertisement_urls = []
         with ThreadPoolExecutor(max_workers=16) as executor:
 
             for page in pages:
-                offer_urls_futures.append(executor.submit(SprzedajemyUtils.find_all_offers_in_selected_page, page))
+                advertisement_urls_futures.append(
+                    executor.submit(SprzedajemyUtils.find_all_offers_in_current_page, page)
+                )
 
-            completed_futures, _ = concurrent.futures.wait(offer_urls_futures)
+            completed_futures, _ = concurrent.futures.wait(advertisement_urls_futures)
             for future in completed_futures:
-                results_list.append(future.result())
+                collected_lists_of_advertisement_urls.append(future.result())
 
-            offers = [result for results in results_list for result in results]
+            advertisement_urls = [
+                advertisement_url
+                for advertisements_list_from_single_page in collected_lists_of_advertisement_urls
+                for advertisement_url in advertisements_list_from_single_page
+            ]
 
-        return offers
+        return advertisement_urls
 
     async def append_data(self, info: AdvertisementInfo) -> None:
-        self.current_data.append(info)
+        self.collected_osint_data.append(info)
 
-    async def load_data_async(self, offer_url):
+    async def load_advertisement_info_from_url(self, advertisement_url: str):
         try:
-            async with aiohttp.ClientSession(trust_env=True, timeout=aiohttp.ClientTimeout(total=20)) as session:
-                async with session.get(offer_url, timeout=25) as resp:
-                    body = await resp.text()
-                    soup = BeautifulSoup(body, 'html.parser')
-                    title = SprzedajemyUtils.get_offer_title(soup)
-                    username = SprzedajemyUtils.get_offer_username(soup)
-                    location = SprzedajemyUtils.get_offer_location(soup)
-                    phone_number = SprzedajemyUtils.get_offer_phone_number(soup)
-                    price = SprzedajemyUtils.get_offer_price(soup)
-                    url = offer_url
-                    # print("test " + offer_url)
-            await self.append_data(AdvertisementInfo(title, username, location, phone_number, price, url))
+            async with aiohttp.ClientSession(
+                    trust_env=True, timeout=aiohttp.ClientTimeout(total=20)
+            ) as session:
+                async with session.get(advertisement_url, timeout=25) as resp:
+                    body: str = await resp.text()
+                    soup: BeautifulSoup = BeautifulSoup(body, "html.parser")
+                    title, username, location, phone_number, price = SprzedajemyUtils.get_offer_details(soup)
+            await self.append_data(
+                AdvertisementInfo(title, username, location, phone_number, price, advertisement_url)
+            )
         except Exception as e:
             print({e})
             raise Exception
 
-    async def load_osint_data_async(self, offer_list: list[str]) -> None:
+    async def collect_osint_data(self, offer_list: list[str]) -> None:
         tasks = []
         for offer in offer_list:
-            task = asyncio.create_task(ScraperUtils.fail_repeat_execution(self.load_data_async, offer))
+            task = asyncio.create_task(
+                ScraperUtils.fail_repeat_execution(self.load_advertisement_info_from_url, offer)
+            )
             tasks.append(task)
 
         await asyncio.gather(*tasks)
 
-    def get_osint_data(self) -> list[AdvertisementInfo]:
-        return self.current_data
-
-    def data_clear(self):
-        self.current_data = []
-
-    def settings(self, *cities) -> None:
+    def change_cities(self, *cities: str) -> None:
         self.cities = cities
-        self.data_clear()
 
-    def start(self):
+    @staticmethod
+    def send_data_to_server(
+            host: str, port: int, client_socket: socket.socket, info_list: list
+    ) -> None:
+        json_data = json.dumps(info_list)
+        with client_socket as s:
+            s.connect((host, port))
+            s.sendall(bytes(json_data, encoding="utf-8"))
+            print(f"Sent JSON data: {json_data}")
+            s.close()
+
+    def start(self, host: str, port: int, client_socket: socket.socket) -> None:
         urls = self.get_all_offers_urls()
-        asyncio.run(self.load_osint_data_async(urls))
+        asyncio.run(self.collect_osint_data(urls))
+        self.send_data_to_server(
+            host,
+            port,
+            client_socket,
+            [offer_details.convert_to_json() for offer_details in self.collected_osint_data],
+        )
