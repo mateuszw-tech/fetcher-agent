@@ -1,8 +1,8 @@
 from fetcher import SprzedajemyFetcher
 from agent import Agent
 
-sprzedajemy_fetcher = SprzedajemyFetcher("Malbork")
+# sprzedajemy_fetcher = SprzedajemyFetcher("Malbork")
 
-agent = Agent(sprzedajemy_fetcher)
-agent.start_all_fetchers()
+agent = Agent()
+agent.run()
 

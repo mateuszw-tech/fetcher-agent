@@ -6,6 +6,7 @@ class SprzedajemySettings:
         self.fetcher = sprzedajemy_fetcher
 
     def from_json(self, settings_json: dict):
+        pass
 
 #
 # class OtomotoSettings:
