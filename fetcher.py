@@ -7,8 +7,9 @@ from typing import List
 from bs4 import BeautifulSoup
 import asyncio
 import aiohttp
-import socket
 from utils import SprzedajemyUtils, ScraperUtils
+from queue import Queue
+from queue import Empty
 
 
 class AdvertisementInfo:
@@ -46,24 +47,13 @@ class Fetcher(ABC):
     def collect_osint_data(self, offer_list) -> List[AdvertisementInfo]:
         raise NotImplementedError()
 
-    @abstractmethod
-    def start(self, host: str, port: int, client_socket: socket.socket) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    @property
-    def settings(self):
-        raise NotImplementedError()
-
 
 class SprzedajemyFetcher(Fetcher):  # NOQA
 
     def __init__(self, *cities: str):
         self.cities: tuple = cities
-        self.collected_osint_data: list[AdvertisementInfo] = []
-    # Fetcher ma wkładać rzeczy do kolejki, agent niech z niej wyciąga, wszystko pojedynczo
-    # pool, kolejka ma być bezpieczna pomiędzy wątkami (thread safe)
-    # zbieram OLAP nie OLTP,
+        self.collected_osint_data: Queue = Queue()
+        self.fetching_status = True
 
     def get_all_offers_urls(self) -> List[str]:
         pages = ScraperUtils.get_all_pages_urls_from_different_cities(
@@ -91,7 +81,7 @@ class SprzedajemyFetcher(Fetcher):  # NOQA
         return advertisement_urls
 
     async def append_data(self, info: AdvertisementInfo) -> None:
-        self.collected_osint_data.append(info)
+        self.collected_osint_data.put(info)
 
     async def load_advertisement_info_from_url(self, advertisement_url: str):
         try:
@@ -106,16 +96,16 @@ class SprzedajemyFetcher(Fetcher):  # NOQA
                 AdvertisementInfo(title, username, location, phone_number, price, advertisement_url)
             )
         except Exception as e:
-            print({e})
-            raise Exception
+            pass
 
     async def collect_osint_data(self, offer_list: list[str]) -> None:
         tasks = []
         for offer in offer_list:
-            task = asyncio.create_task(
-                ScraperUtils.fail_repeat_execution(self.load_advertisement_info_from_url, offer)
-            )
-            tasks.append(task)
+            if self.fetching_status:
+                task = asyncio.create_task(
+                    ScraperUtils.fail_repeat_execution(self.load_advertisement_info_from_url, offer)
+                )
+                tasks.append(task)
 
         await asyncio.gather(*tasks)
 
@@ -123,22 +113,49 @@ class SprzedajemyFetcher(Fetcher):  # NOQA
         self.cities = cities
 
     @staticmethod
-    def send_data_to_server(
-            host: str, port: int, client_socket: socket.socket, info_list: list
-    ) -> None:
-        json_data = json.dumps(info_list)
-        with client_socket as s:
-            s.connect((host, port))
-            s.sendall(bytes(json_data, encoding="utf-8"))
-            print(f"Sent JSON data: {json_data}")
-            s.close()
+    async def send_data_to_server(writer: asyncio.StreamWriter, data_queue: Queue) -> None:
+        while True:
+            try:
+                data = data_queue.get(block=True, timeout=1)
+                json_data = json.dumps(data.convert_to_json() + "\r\n")
 
-    def start(self, host: str, port: int, client_socket: socket.socket) -> None:
+                writer.write(json_data.encode("ascii"))
+                print(f"sent: {json_data.encode("ascii")}")
+                await writer.drain()
+
+            except Empty:
+                print('Got nothing, waiting a while...')
+                await asyncio.sleep(5)
+            except ConnectionRefusedError:
+                print("Connection refused. Closing writer.")
+                writer.close()
+                await writer.wait_closed()
+                break
+
+    async def receive_instructions_from_server(self, reader: asyncio.StreamReader) -> None:
+        while True:
+            instructions = await reader.read(1024)
+            await self.instructions_handler(instructions.decode())
+
+    async def instructions_handler(self, instructions: str):
+        if instructions.startswith("fetch"):
+            await self.start_fetching_data('127.0.0.1', 55555)
+        elif instructions.startswith("stop"):
+            self.fetching_status = False
+
+    async def start_fetching_data(self, host: str, port: int) -> None:
+        print("gathering data started...")
         urls = self.get_all_offers_urls()
-        asyncio.run(self.collect_osint_data(urls))
-        self.send_data_to_server(
-            host,
-            port,
-            client_socket,
-            [offer_details.convert_to_json() for offer_details in self.collected_osint_data],
-        )
+
+        reader, writer = await asyncio.open_connection(host, port)
+        send_data_task = asyncio.create_task(self.send_data_to_server(writer, self.collected_osint_data))
+
+        await self.collect_osint_data(urls)
+
+        await send_data_task
+
+    async def connect(self, host: str, port: int) -> None:
+        reader, writer = await asyncio.open_connection(host, port)
+
+        receive_instructions_task = asyncio.create_task(self.receive_instructions_from_server(reader))
+        await receive_instructions_task
