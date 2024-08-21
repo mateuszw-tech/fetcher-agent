@@ -102,7 +102,9 @@ class SprzedajemyFetcher(Fetcher):  # NOQA
     async def collect_osint_data(self, offer_list: list[str], queue: Queue) -> None:
         tasks = []
         for offer in offer_list:
-            if self.fetching_status:
+            if self.fetching_status is False:
+                break
+            else:
                 task = asyncio.create_task(
                     ScraperUtils.fail_repeat_execution(self.load_advertisement_info_from_url, offer, queue)
                 )
