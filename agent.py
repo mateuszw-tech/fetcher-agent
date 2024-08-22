@@ -38,10 +38,10 @@ class Agent:
         while True:
             try:
                 data = data_queue.get(block=True, timeout=1)
-                json_data = json.dumps(data.convert_to_json() + "\r\n")
+                json_data = (data.convert_to_json() + "\r\n")
 
-                writer.write(json_data.encode("ascii"))
-                print(f"sent: {json_data.encode("ascii")}")
+                writer.write(json_data.encode(encoding="UTF-8", errors="ignore"))
+                print(f"sent: {json_data.encode(encoding="utf-8", errors="ignore")}")
                 await writer.drain()
 
             except Empty:
