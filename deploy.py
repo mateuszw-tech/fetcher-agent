@@ -1,8 +1,9 @@
-from fetcher import SprzedajemyFetcher
 from agent import Agent
+from fetcher import SprzedajemyFetcher
 
-# sprzedajemy_fetcher = SprzedajemyFetcher("Malbork")
+sprzedajemy_fetcher = SprzedajemyFetcher()
+fetchers_list = [sprzedajemy_fetcher]
 
-agent = Agent()
+agent: Agent = Agent(fetchers_list)
 agent.run()
 

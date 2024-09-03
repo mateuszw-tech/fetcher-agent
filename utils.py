@@ -1,12 +1,8 @@
-import concurrent.futures
-import time
 import asyncio
 
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-
-from concurrent.futures import ThreadPoolExecutor
 
 
 class ScraperUtils:
@@ -64,7 +60,7 @@ class SprzedajemyUtils:
         return int(test_soup.find("span").get_text()) - 1
 
     @staticmethod
-    def get_all_pages_urls(city) -> list[str]:
+    def get_all_pages_urls(city: str) -> list[str]:
         url = SprzedajemyUtils.get_url_with_localization_input(city)
         pages = [url]
         soup = ScraperUtils.return_website_string_as_bs4_content(url)

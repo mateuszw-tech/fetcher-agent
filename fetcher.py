@@ -1,5 +1,6 @@
 import concurrent
 import json
+import time
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
@@ -9,7 +10,6 @@ import asyncio
 import aiohttp
 from utils import SprzedajemyUtils, ScraperUtils
 from queue import Queue
-from queue import Empty
 
 
 class AdvertisementInfo:
@@ -30,7 +30,7 @@ class AdvertisementInfo:
         self.price = price
         self.url = url
 
-    def convert_to_json(self) -> str:
+    def return_as_json(self) -> str:
         info_dict = {
             "title": self.title,
             "username": self.username,
@@ -47,13 +47,21 @@ class Fetcher(ABC):
     def collect_osint_data(self, offer_list, queue) -> List[AdvertisementInfo]:
         raise NotImplementedError()
 
+    @abstractmethod
+    async def start_fetching(self, queue: Queue, iteration_time: int) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def stop_fetching(self) -> None:
+        raise NotImplementedError()
+
 
 class SprzedajemyFetcher(Fetcher):  # NOQA
 
-    def __init__(self, *cities: str):
-        self.cities: tuple = cities
-        self.collected_osint_data: Queue = Queue()
-        self.fetching_status = True
+    def __init__(self):
+        self.cities: tuple[str] | None = None
+        self.fetcher_type: str = 'SprzedajemyFetcher'
+        self.fetching_status: bool = False
 
     def get_all_offers_urls(self) -> List[str]:
         pages = ScraperUtils.get_all_pages_urls_from_different_cities(
@@ -85,39 +93,37 @@ class SprzedajemyFetcher(Fetcher):  # NOQA
         queue.put(info)
 
     async def load_advertisement_info_from_url(self, advertisement_url: str, queue: Queue):
-        try:
-            async with aiohttp.ClientSession(
-                    trust_env=True, timeout=aiohttp.ClientTimeout(total=20)
-            ) as session:
-                async with session.get(advertisement_url, timeout=25) as resp:
-                    body: str = await resp.text()
-                    soup: BeautifulSoup = BeautifulSoup(body, "html.parser")
-                    title, username, location, phone_number, price = SprzedajemyUtils.get_offer_details(soup)
-            await self.append_data(
-                AdvertisementInfo(title, username, location, phone_number, price, advertisement_url), queue
-            )
-        except Exception as e:
-            pass
+        async with aiohttp.ClientSession(
+                trust_env=True, timeout=aiohttp.ClientTimeout(total=20)
+        ) as session:
+            async with session.get(advertisement_url, timeout=25) as resp:
+                body: str = await resp.text()
+                soup: BeautifulSoup = BeautifulSoup(body, "html.parser")
+                title, username, location, phone_number, price = SprzedajemyUtils.get_offer_details(soup)
+        await self.append_data(
+            AdvertisementInfo(title, username, location, phone_number, price, advertisement_url), queue
+        )
 
     async def collect_osint_data(self, offer_list: list[str], queue: Queue) -> None:
         tasks = []
         for offer in offer_list:
-            if self.fetching_status is False:
+            if not self.fetching_status:
                 break
-            else:
-                task = asyncio.create_task(
-                    ScraperUtils.fail_repeat_execution(self.load_advertisement_info_from_url, offer, queue)
-                )
-                tasks.append(task)
+            task = asyncio.create_task(
+                ScraperUtils.fail_repeat_execution(self.load_advertisement_info_from_url, offer, queue)
+            )
+            tasks.append(task)
 
         await asyncio.gather(*tasks)
 
-    def change_cities(self, *cities: str) -> None:
-        self.cities = cities
-
-    async def start_fetching_data(self, queue: Queue) -> None:
+    async def start_fetching(self, queue: Queue, iteration_time: int) -> None:
         print("SprzedajemyFetcher: gathering data started...")
-        urls = self.get_all_offers_urls()
+        self.fetching_status = True
+        while self.fetching_status:
+            urls = self.get_all_offers_urls()
+            await self.collect_osint_data(urls, queue)
+            time.sleep(iteration_time)
 
-        await self.collect_osint_data(urls, queue)
-
+    def stop_fetching(self):
+        print("SprzedajemyFetcher: gathering data stopped...")
+        self.fetching_status = False
