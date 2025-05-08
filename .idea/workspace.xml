@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a26657a9-7852-42f4-a0db-a34a0c98552a" name="Changes" comment="Add iteration feature between fetching">
+      <change beforePath="$PROJECT_DIR$/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fetcher.py" beforeDir="false" afterPath="$PROJECT_DIR$/fetcher.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/settings.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;mateuszw-tech&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/mateuszw-tech/fetcher-agent.git&quot;,
+    &quot;accountId&quot;: &quot;8202d143-da4e-41a5-ad07-0560dca28a56&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2iVDBa45oKGpOEQXnnuqiU8de9Z" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.agent.executor&quot;: &quot;Run&quot;,
+    &quot;Python.deploy.executor&quot;: &quot;Run&quot;,
+    &quot;Python.fetcher.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Mateusz/PycharmProjects/fetcher-agent&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a26657a9-7852-42f4-a0db-a34a0c98552a" name="Changes" comment="" />
+      <created>1719566717132</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1719566717132</updated>
+      <workItem from="1719566723778" duration="354000" />
+      <workItem from="1719568276344" duration="460000" />
+      <workItem from="1719569155166" duration="19286000" />
+      <workItem from="1719610968830" duration="315000" />
+      <workItem from="1719653814875" duration="3581000" />
+      <workItem from="1719855680297" duration="6000" />
+      <workItem from="1720038737914" duration="2372000" />
+      <workItem from="1720168549591" duration="22032000" />
+      <workItem from="1720640215049" duration="603000" />
+      <workItem from="1720702558102" duration="7335000" />
+      <workItem from="1720785340941" duration="4530000" />
+      <workItem from="1720878448801" duration="3489000" />
+      <workItem from="1720945293178" duration="5237000" />
+      <workItem from="1721410992419" duration="5417000" />
+      <workItem from="1721504243069" duration="1123000" />
+      <workItem from="1721593607518" duration="6390000" />
+      <workItem from="1721666228259" duration="7655000" />
+      <workItem from="1721833544924" duration="17320000" />
+      <workItem from="1721999992171" duration="14708000" />
+      <workItem from="1722092116177" duration="16491000" />
+      <workItem from="1722177913396" duration="1623000" />
+      <workItem from="1722192249646" duration="7246000" />
+      <workItem from="1722340257290" duration="1063000" />
+      <workItem from="1722446070424" duration="7851000" />
+      <workItem from="1722530422585" duration="1203000" />
+      <workItem from="1722691367261" duration="905000" />
+      <workItem from="1722874224249" duration="997000" />
+      <workItem from="1722875460060" duration="79000" />
+      <workItem from="1722875807697" duration="7946000" />
+      <workItem from="1723040007993" duration="8016000" />
+      <workItem from="1723106098337" duration="18705000" />
+      <workItem from="1723205270403" duration="7873000" />
+      <workItem from="1723402177046" duration="1854000" />
+      <workItem from="1723487629553" duration="1955000" />
+      <workItem from="1723496332645" duration="714000" />
+      <workItem from="1723760363144" duration="1782000" />
+      <workItem from="1723847299351" duration="2342000" />
+      <workItem from="1724003538475" duration="4229000" />
+      <workItem from="1724171965332" duration="1689000" />
+      <workItem from="1724174978902" duration="7591000" />
+      <workItem from="1724241443640" duration="15132000" />
+      <workItem from="1724339947781" duration="10794000" />
+      <workItem from="1724435647886" duration="4962000" />
+      <workItem from="1724759828055" duration="7107000" />
+      <workItem from="1724948650437" duration="9823000" />
+      <workItem from="1725372473859" duration="8351000" />
+      <workItem from="1725463822432" duration="2265000" />
+      <workItem from="1725479062707" duration="2650000" />
+      <workItem from="1725906415335" duration="2015000" />
+      <workItem from="1738010106246" duration="721000" />
+    </task>
+    <task id="LOCAL-00001" summary="Repo create">
+      <option name="closed" value="true" />
+      <created>1719568409416</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1719568409416</updated>
+    </task>
+    <task id="LOCAL-00002" summary="test">
+      <option name="closed" value="true" />
+      <created>1719568720682</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1719568720682</updated>
+    </task>
+    <task id="LOCAL-00003" summary="add scraper code">
+      <option name="closed" value="true" />
+      <created>1719570944938</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1719570944938</updated>
+    </task>
+    <task id="LOCAL-00004" summary="add client-server logic">
+      <option name="closed" value="true" />
+      <created>1720213542423</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1720213542423</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Improved naming, improved agent functions">
+      <option name="closed" value="true" />
+      <created>1722010632901</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1722010632902</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add new fetcher functions, start to work on fetcher settings">
+      <option name="closed" value="true" />
+      <created>1724246025411</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1724246025411</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Fix code structure, migrate fetcher functionalities to agent file">
+      <option name="closed" value="true" />
+      <created>1724259031211</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1724259031211</updated>
+    </task>
+    <task id="LOCAL-00008" summary="fix collect_osint_data fetching status feature">
+      <option name="closed" value="true" />
+      <created>1724259860706</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1724259860706</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Change client code structure">
+      <option name="closed" value="true" />
+      <created>1724348409576</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1724348409576</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Add iteration feature between fetching">
+      <option name="closed" value="true" />
+      <created>1725384643967</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1725384643967</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Repo create" />
+    <MESSAGE value="test" />
+    <MESSAGE value="add scraper code" />
+    <MESSAGE value="add client-server logic" />
+    <MESSAGE value="Improved naming, improved agent functions" />
+    <MESSAGE value="Add new fetcher functions, start to work on fetcher settings" />
+    <MESSAGE value="Fix code structure, migrate fetcher functionalities to agent file" />
+    <MESSAGE value="fix collect_osint_data fetching status feature" />
+    <MESSAGE value="Change client code structure" />
+    <MESSAGE value="Add iteration feature between fetching" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add iteration feature between fetching" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/fetcher_agent$fetcher.coverage" NAME="fetcher Coverage Results" MODIFIED="1724340800276" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/fetcher_agent$deploy.coverage" NAME="deploy Coverage Results" MODIFIED="1725908382009" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/fetcher_agent$main.coverage" NAME="main Coverage Results" MODIFIED="1720179068170" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/fetcher_agent$agent.coverage" NAME="agent Coverage Results" MODIFIED="1725907183535" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

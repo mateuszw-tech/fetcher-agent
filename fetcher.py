@@ -1,6 +1,5 @@
 import concurrent
 import json
-import time
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
@@ -122,7 +121,7 @@ class SprzedajemyFetcher(Fetcher):  # NOQA
         while self.fetching_status:
             urls = self.get_all_offers_urls()
             await self.collect_osint_data(urls, queue)
-            time.sleep(iteration_time)
+            await asyncio.sleep(iteration_time)
 
     def stop_fetching(self):
         print("SprzedajemyFetcher: gathering data stopped...")
